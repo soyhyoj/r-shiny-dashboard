@@ -8,13 +8,13 @@
 # Libraries to connect to mysql
 library(DBI)
 library(RMySQL)
+library(dplyr)
 library(ggplot2)
 
 ###################################################
 # 1 - Data & Source
 ###################################################
 # A sample MySQL database was downloaded from: https://www.mysqltutorial.org/mysql-sample-database.aspx
-
 # Connect to mysql server inside a docker container within local machine
 conn <- dbConnect(
   drv = RMySQL::MySQL(),
@@ -22,24 +22,30 @@ conn <- dbConnect(
   host = "127.0.0.1",
   port=3305,
   username = "root",
-  password = "pwd")
+  password = "tms")
 
 
 ###################################################
-# 2 - Sample query to get data
+# 2 - Sample query to get & explore data
 ###################################################
-# Get employees table
-employees <- "SELECT * FROM employees;"
-rs <- dbSendQuery(conn, employees)
-result_employees <- dbFetch(rs) # Fetch queried data
-df_employees <- data.frame(result_employees) # Print the result as a dataframe
+# Get orderdetails table
+orders <- "SELECT * FROM orderdetails AS od
+           JOIN orders AS o ON od.orderNumber = o.orderNumber;"
+query1 <- dbSendQuery(conn, orders)
+result_orders <- dbFetch(query1) # Fetch queried data
+df_orders <<- data.frame(result_orders) # Print the result as a dataframe
 
-# How many employees?
-n_employees <- length(unique(df_employees$employeeNumber))
+# How many orders?
+n_orders <- length(unique(df_orders$orderNumber))
 
-# How many job titles?
-n_titles <- length(unique(df_employees$jobTitle))
+# How many orders by status?
+order_by_status <- df_orders %>% count(status)
 
+# total quantity ordered by date
+ts_quantity <- aggregate(df_orders$quantityOrdered, by=list(orderdate=df_orders$orderDate), FUN=sum)
 
+# total price of orders by date
+ts_price <- aggregate(df_orders$priceEach, by=list(orderdate=df_orders$orderDate), FUN=sum)
+ts_price
 # Disconnect database connection
 dbDisconnect(conn)
