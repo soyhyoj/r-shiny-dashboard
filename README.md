@@ -1,9 +1,7 @@
 ## Interactive dashboard with R
 
 ### Objective
-To create a shiny dashboard app utilizing different widget elements and dockerized MySQL DB to highlight what I have learned creating my first R shiny app in 2021
+To create a Shiny dashboard app utilizing different widget elements and dockerized MySQL DB to highlight what I have learned developing in R
 
 ### Data
-source to be added
-
-
+A sample MySQl database can be downloaded [here](https://www.mysqltutorial.org/mysql-sample-database.aspx).
